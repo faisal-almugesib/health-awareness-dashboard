@@ -30,7 +30,7 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data, title, yAxisLabel
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`); //translate is used to move the chart to the left and top by the margin values
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Get all years and values
     const yearSet = new Set(data.flatMap(d => d.data.map(p => p.year)));
@@ -46,10 +46,10 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data, title, yAxisLabel
     const y = d3.scaleLinear()
       .domain([0, maxValue])
       .nice()
-      .range([height, 0]); // the first value is the height of the chart and the second value is the bottom of the chart
+      .range([height, 0]);
 
     // Line generator
-    const line = d3.line<{ year: string; value: number }>() //This is just the "recipe" - no data yet!, we will use it to create the line in code line 86
+    const line = d3.line<{ year: string; value: number }>()
       .x(d => x(d.year) || 0)
       .y(d => y(d.value));
 
@@ -61,7 +61,7 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ data, title, yAxisLabel
       .style("text-anchor", "end")
       .attr("dx", "-.8em")
       .attr("dy", ".15em")
-      .attr("transform", "rotate(-45)"); // rotate is used to rotate the text by 45 degrees
+      .attr("transform", "rotate(-45)");
 
     // Add Y axis
     svg.append("g")

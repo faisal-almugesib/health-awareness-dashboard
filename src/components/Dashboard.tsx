@@ -33,14 +33,14 @@ const Dashboard: React.FC = () => {
     const loadData = async () => {
       try {
         // Load activity prevalence data
-        const activityRaw = await d3.csv("/data/activity_prevalence.csv");
+        const activityRaw = await d3.csv(`${process.env.PUBLIC_URL}/data/activity_prevalence.csv`);
         const activityProcessed: DataPoint[] = activityRaw.map(d => ({
           year: d.year as string,
           total_pct: Number(d.total_pct)
         }));
 
         // Load investment data
-        const investmentRaw = await d3.csv("/data/digital_and_investment.csv");
+        const investmentRaw = await d3.csv(`${process.env.PUBLIC_URL}/data/digital_and_investment.csv`);
         const investmentProcessed: InvestmentData[] = investmentRaw.map(d => ({
           year: d.year as string,
           investment: Number(d.investment_billion),
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
         }));
 
         // Load Olympic data
-        const olympicRaw = await d3.csv("/data/olympic_participation.csv");
+        const olympicRaw = await d3.csv(`${process.env.PUBLIC_URL}/data/olympic_participation.csv`);
         const olympicProcessed: OlympicData[] = olympicRaw.map(d => ({
           year: d.year as string,
           total_athletes: Number(d.total_athletes),
