@@ -23,8 +23,8 @@ const GaugeChart: React.FC<GaugeChartProps> = ({ value, target, title, unit }) =
     const height = 300;
 
     const svg = d3.select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("class", "responsive-svg gauge-svg")
       .append("g")
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
@@ -167,14 +167,15 @@ const GaugeChart: React.FC<GaugeChartProps> = ({ value, target, title, unit }) =
         .text(`Target: ${target}${unit}`);
     }
 
-    // Center value text
+    // Value text sits in the lower lobe of the heart so it stays on the
+    // filled (red) area for any value above ~45%
     svg.append("text")
       .attr("text-anchor", "middle")
-      .attr("dy", "0.3em")
-      .style("font-size", "1.8em")
+      .attr("dy", "1.4em")
+      .style("font-size", "1.7em")
       .style("font-weight", "bold")
       .style("fill", "#fff")
-      .style("text-shadow", "2px 2px 4px rgba(0,0,0,0.5)")
+      .style("text-shadow", "1px 1px 3px rgba(0,0,0,0.45)")
       .text(`${value}${unit}`);
 
     // Title above the heart

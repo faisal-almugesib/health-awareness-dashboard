@@ -75,9 +75,31 @@
   --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
 }
 
-/* Global animation settings */
-* {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Responsive SVG charts: fixed internal coordinate system, fluid width */
+.responsive-svg {
+  width: 100%;
+  height: auto;
+  max-width: 700px;
+}
+
+.gauge-svg {
+  max-width: 400px;
+}
+
+.chart-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+}
+
+.sources-footer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-2xl);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
 }
 
 /* Reset and base styles */

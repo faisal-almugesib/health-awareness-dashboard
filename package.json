@@ -42,5 +42,10 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://faisal-almugesib.github.io/health-awareness-dashboard"
+  "homepage": "https://faisal-almugesib.github.io/health-awareness-dashboard",
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(d3|d3-[^/]+|internmap|delaunator|robust-predicates)/)"
+    ]
+  }
 }
