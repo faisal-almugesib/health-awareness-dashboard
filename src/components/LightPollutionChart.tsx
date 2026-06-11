@@ -51,12 +51,6 @@ const LightPollutionChart: React.FC = () => {
       .range([0, width])
       .padding(0.6);
 
-    const maxRadius = 40;
-    const lightRadiusScale = d3
-      .scaleSqrt()
-      .domain([0, d3.max(data, d => d.radiance) || 0])
-      .range([5, maxRadius]);
-
     const beamHeightScale = d3
       .scaleLinear()
       .domain([0, d3.max(data, d => d.radiance) || 0])

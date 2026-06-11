@@ -71,7 +71,7 @@ const GaugeChart: React.FC<GaugeChartProps> = ({ value, target, title, unit }) =
       .style("stroke-width", 2);
 
     // Filled heart with pulsing animation
-    const heartElement = pulseAnimation.append("path")
+    pulseAnimation.append("path")
       .attr("d", heartPath)
       .style("fill", "url(#heartGradient)")
       .style("stroke", value >= target ? "#ff1744" : "#ff4081")
