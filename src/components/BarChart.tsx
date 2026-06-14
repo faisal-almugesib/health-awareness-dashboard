@@ -10,11 +10,11 @@ interface BarChartProps {
   data: BarDatum[];
   title: string;
   /**
-   * 'dumbbells' renders an ISOTYPE-style pictogram — one dumbbell icon per
+   * 'dumbbells' renders an ISOTYPE-style pictogram — one dumbbell glyph per
    * `unitsPerIcon` — for the activity chart. 'bars' renders plain bars.
    */
   variant?: 'bars' | 'dumbbells';
-  /** Percentage points represented by a single icon (dumbbells variant). */
+  /** Percentage points represented by a single glyph (dumbbells variant). */
   unitsPerIcon?: number;
   format?: (value: number) => string;
 }
@@ -22,6 +22,10 @@ interface BarChartProps {
 const WIDTH = 640;
 const HEIGHT = 400;
 const MARGIN = { top: 48, right: 20, bottom: 36, left: 44 };
+
+const ACCENT = '#6366f1';
+const INK = '#0f172a';
+const INK_SOFT = '#334155';
 
 const BarChart: React.FC<BarChartProps> = ({
   data,
@@ -86,11 +90,11 @@ const BarChart: React.FC<BarChartProps> = ({
         tip
           .append('rect')
           .attr('x', -38)
-          .attr('y', -22)
+          .attr('y', -23)
           .attr('width', 76)
-          .attr('height', 22)
-          .attr('fill', 'rgba(0, 0, 0, 0.8)')
-          .attr('rx', 5);
+          .attr('height', 23)
+          .attr('fill', INK)
+          .attr('rx', 6);
         tip
           .append('text')
           .attr('text-anchor', 'middle')
@@ -113,7 +117,7 @@ const BarChart: React.FC<BarChartProps> = ({
       .attr('text-anchor', 'middle')
       .style('font-size', '12px')
       .style('font-weight', 'bold')
-      .style('fill', '#333')
+      .style('fill', INK_SOFT)
       .style('opacity', 0)
       .text(d => format(d.value))
       .transition()
@@ -126,8 +130,9 @@ const BarChart: React.FC<BarChartProps> = ({
       .attr('x', width / 2)
       .attr('y', -MARGIN.top / 2)
       .attr('text-anchor', 'middle')
-      .style('font-size', '16px')
+      .style('font-size', '15px')
       .style('font-weight', '600')
+      .style('fill', INK)
       .text(title);
   }, [data, title, variant, unitsPerIcon, format]);
 
@@ -150,7 +155,7 @@ function drawBars(
     .attr('x', d => x(d.label) || 0)
     .attr('width', x.bandwidth())
     .attr('rx', 6)
-    .attr('fill', '#667eea')
+    .attr('fill', ACCENT)
     .attr('y', height)
     .attr('height', 0)
     .transition()
@@ -159,6 +164,40 @@ function drawBars(
     .ease(d3.easeCubicOut)
     .attr('y', d => y(d.value))
     .attr('height', d => height - y(d.value));
+}
+
+/**
+ * A dumbbell drawn from scratch with SVG rects (no image assets): end caps,
+ * outer + inner plates, and a thinner handle, all vertically centred.
+ */
+function appendDumbbell(
+  parent: d3.Selection<SVGGElement, unknown, null, undefined>,
+  w: number,
+  h: number,
+) {
+  const cy = h / 2;
+  const piece = (px: number, pw: number, ph: number, fill: string) =>
+    parent
+      .append('rect')
+      .attr('x', px)
+      .attr('y', cy - ph / 2)
+      .attr('width', pw)
+      .attr('height', ph)
+      .attr('rx', Math.min(3, pw / 2))
+      .attr('fill', fill);
+
+  const capW = 0.05 * w;
+  const outerW = 0.1 * w;
+  const innerW = 0.12 * w;
+  const handleW = w - 2 * (capW + outerW + innerW);
+
+  piece(capW + outerW + innerW, handleW, 0.2 * h, '#a5b4fc'); // handle
+  piece(capW + outerW, innerW, 0.95 * h, '#4f46e5'); // inner plates
+  piece(w - capW - outerW - innerW, innerW, 0.95 * h, '#4f46e5');
+  piece(capW, outerW, 0.66 * h, ACCENT); // outer plates
+  piece(w - capW - outerW, outerW, 0.66 * h, ACCENT);
+  piece(0, capW, 0.28 * h, '#818cf8'); // end caps
+  piece(w - capW, capW, 0.28 * h, '#818cf8');
 }
 
 /** One dumbbell per `unitsPerIcon` units, stacked bottom-up (ISOTYPE style). */
@@ -170,27 +209,27 @@ function drawPictogram(
   height: number,
   unitsPerIcon: number,
 ) {
-  const iconUrl = `${process.env.PUBLIC_URL}/images/dumbell.png`;
-  const iconH = height - y(unitsPerIcon);
-  const iconW = Math.min(x.bandwidth() * 0.65, iconH * 1.6);
+  const slotH = height - y(unitsPerIcon);
+  const glyphH = slotH * 0.74;
+  const glyphW = Math.min(x.bandwidth() * 0.7, glyphH * 2.4);
 
   data.forEach((d, col) => {
     const icons = Math.max(1, Math.round(d.value / unitsPerIcon));
     const cx = (x(d.label) || 0) + x.bandwidth() / 2;
     for (let i = 0; i < icons; i++) {
-      svg
-        .append('image')
-        .attr('href', iconUrl)
-        .attr('x', cx - iconW / 2)
-        .attr('y', height - (i + 1) * iconH + iconH * 0.05)
-        .attr('width', iconW)
-        .attr('height', iconH * 0.9)
-        .attr('preserveAspectRatio', 'xMidYMid meet')
-        .style('opacity', 0)
+      const yTop = height - (i + 1) * slotH + (slotH - glyphH) / 2;
+      const glyph = svg
+        .append('g')
+        .attr('transform', `translate(${cx - glyphW / 2}, ${yTop + 8})`)
+        .style('opacity', 0);
+      appendDumbbell(glyph, glyphW, glyphH);
+      glyph
         .transition()
         .delay(col * 200 + i * 90)
-        .duration(250)
-        .style('opacity', 0.95);
+        .duration(300)
+        .ease(d3.easeCubicOut)
+        .style('opacity', 1)
+        .attr('transform', `translate(${cx - glyphW / 2}, ${yTop})`);
     }
   });
 }
